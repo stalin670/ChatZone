@@ -24,12 +24,14 @@ const Signup = () => {
         <FormLabel>Name</FormLabel>
         <Input
           placeholder="Enter Your Name"
+          value={name}
           onChange={(e) => setName(e.target.value)}
         ></Input>
       </FormControl>
       <FormControl id="email" isRequired>
         <FormLabel>Email</FormLabel>
         <Input
+          value={email}
           placeholder="Enter Your Email"
           onChange={(e) => setEmail(e.target.value)}
         ></Input>
@@ -38,21 +40,18 @@ const Signup = () => {
         <FormLabel>Password</FormLabel>
         <InputGroup>
           <Input
+            value={password}
             type={show ? "text" : "password"}
             placeholder="Enter Your Password"
             onChange={(e) => setPassword(e.target.value)}
           />
-          <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClick}>
-              {show ? "Hide" : "Show"}
-            </Button>
-          </InputRightElement>
         </InputGroup>
       </FormControl>
       <FormControl id="password" isRequired>
         <FormLabel>Password</FormLabel>
         <InputGroup>
           <Input
+            value={confirmpassword}
             type={show ? "text" : "password"}
             placeholder="Confirm Password"
             onChange={(e) => setPassword(e.target.value)}
@@ -67,6 +66,7 @@ const Signup = () => {
       <FormControl id="pic">
         <FormLabel>Upload your Picture</FormLabel>
         <Input
+          value={pic}
           type="file"
           p={1.5}
           accept="image/*"
