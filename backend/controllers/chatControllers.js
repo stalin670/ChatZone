@@ -56,6 +56,33 @@ const accessChat = async (req, res) => {
   }
 };
 
+const fetchChats = async (req, res) => {
+  try {
+    Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password")
+      .populate("latestMessage")
+      .sort({ updatedAt: -1 })
+      .then(async (results) => {
+        results = await User.populate(results, {
+          path: "latestMessage.sender",
+          select: "name pic email",
+        });
+        return res.status(200).json({
+          success: true,
+          message: "Chats Fetched Successfully",
+          results,
+        });
+      });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
   accessChat,
+  fetchChats,
 };
