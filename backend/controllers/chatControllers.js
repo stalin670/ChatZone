@@ -159,9 +159,46 @@ const renameGroup = async (req, res) => {
   }
 };
 
+const removeFromGroup = async (req, res) => {
+  try {
+    const { chatId, userId } = req.body;
+
+    const removed = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+        $pull: { users: userId },
+      },
+      {
+        new: true,
+      }
+    )
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password");
+
+    if (!removed) {
+      return res.status(404).json({
+        success: false,
+        message: "Chat Not Found",
+      });
+    } else {
+      return res.status(200).json({
+        success: true,
+        message: "Added Successfully",
+        removed,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
   accessChat,
   fetchChats,
   createGroupChat,
   renameGroup,
+  removeFromGroup,
 };
