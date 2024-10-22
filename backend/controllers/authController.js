@@ -1,6 +1,31 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const mongoose = require("mongoose");
+
+const allUsers = async (req, res) => {
+  try {
+    const keyword = req.query.search
+      ? {
+          $or: [
+            { name: { $regex: req.query.search, $options: "i" } },
+            { email: { $regex: req.query.search, $options: "i" } },
+          ],
+        }
+      : {};
+    const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+    return res.status(200).json({
+      users,
+      success: true,
+      message: "User retrieved successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
 
 const registerUser = async (req, res) => {
   try {
@@ -90,4 +115,5 @@ const login = async (req, res) => {
 module.exports = {
   login,
   registerUser,
+  allUsers,
 };
