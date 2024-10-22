@@ -33,7 +33,7 @@ const Signup = () => {
       return;
     }
     if (pics.type === "image/jpeg" || pics.type === "image/png") {
-      const data = new FormData();
+      let data = new FormData();
       data.append("file", pics);
       data.append("upload_preset", "ChatZone");
       data.append("cloud_name", "dvbooo0fc");
@@ -96,11 +96,13 @@ const Signup = () => {
         },
       };
 
-      const { data } = await axios.post(
+      const response = await axios.post(
         "http://localhost:8000/api/user/signup",
         { name, email, password, pic },
         config
       );
+
+      const data = response.data;
 
       toast({
         title: "Registration Successfull",
