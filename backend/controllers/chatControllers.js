@@ -195,10 +195,47 @@ const removeFromGroup = async (req, res) => {
   }
 };
 
+const addToGroup = async (req, res) => {
+  try {
+    const { chatId, userId } = req.body;
+
+    const added = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+        $push: { users: userId },
+      },
+      {
+        new: true,
+      }
+    )
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password");
+
+    if (!added) {
+      return res.status(404).json({
+        success: false,
+        message: "Chat Not Found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Added Successfully",
+      added,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
   accessChat,
   fetchChats,
   createGroupChat,
   renameGroup,
   removeFromGroup,
+  addToGroup,
 };
