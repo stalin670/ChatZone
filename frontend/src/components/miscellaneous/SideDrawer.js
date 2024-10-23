@@ -13,6 +13,7 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  Spinner,
   Text,
   Tooltip,
   useDisclosure,
@@ -97,6 +98,10 @@ const SideDrawer = () => {
         { userId },
         config
       );
+
+      if (!chats.find((c) => c._id === data.FullChat._id)) {
+        setChats([...chats, data.FullChat]);
+      }
 
       setSelectedChat(data.FullChat);
       setLoadingChat(false);
@@ -185,6 +190,7 @@ const SideDrawer = () => {
                 />
               ))
             )}
+            {loadingChat && <Spinner ml="auto" display="flex" />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
