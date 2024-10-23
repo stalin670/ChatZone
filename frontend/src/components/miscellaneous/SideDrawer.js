@@ -37,7 +37,7 @@ const SideDrawer = () => {
 
   const navigate = useNavigate();
 
-  const { user } = ChatState();
+  const { user, setSelectedChat, chats, setChats } = ChatState();
 
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
@@ -76,14 +76,42 @@ const SideDrawer = () => {
         status: "error",
         duration: 5000,
         isClosable: true,
-        position: "top-bottom",
+        position: "bottom-left",
       });
       setLoading(false);
       return;
     }
   };
 
-  const accessChat = (userId) => {};
+  const accessChat = async (userId) => {
+    try {
+      setLoadingChat(true);
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${user.jwtToken}`,
+        },
+      };
+      const { data } = await axios.post(
+        `http://localhost:8000/api/chat`,
+        { userId },
+        config
+      );
+
+      setSelectedChat(data.FullChat);
+      setLoadingChat(false);
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Error Fetching Chats",
+        description: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left",
+      });
+    }
+  };
 
   return (
     <>
