@@ -42,32 +42,40 @@ const Login = () => {
         },
       };
 
-      const { data } = await axios.post(
+      const response = await axios.post(
         "http://localhost:8000/api/user/login",
         { email, password },
         config
       );
 
-      toast({
-        title: "Login Successfull",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
+      if (response && response.data) {
+        const { data } = response;
 
-      localStorage.setItem("userInfo", JSON.stringify(data));
-      setLoading(false);
-      navigate("/chats");
+        toast({
+          title: "Login Successful",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+
+        localStorage.setItem("userInfo", JSON.stringify(data));
+        navigate("/chats");
+      } else {
+        throw new Error("Invalid response from server");
+      }
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || error.message || "Error occurred!";
       toast({
-        title: "Error Occured!",
-        description: error.response.data.message,
+        title: "Error Occurred!",
+        description: errorMessage,
         status: "error",
         duration: 5000,
         isClosable: true,
         position: "bottom",
       });
+    } finally {
       setLoading(false);
     }
   };
