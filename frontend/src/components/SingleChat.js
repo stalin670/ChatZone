@@ -1,13 +1,68 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChatState } from "../Context/ChatProvider";
-import { Box, IconButton, Text } from "@chakra-ui/react";
+import {
+  Box,
+  FormControl,
+  IconButton,
+  Input,
+  Spinner,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { getSender, getSenderFull } from "../config/ChatLogics";
 import ProfileModal from "./miscellaneous/ProfileModal";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
+import axios from "axios";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [newMessage, setNewMessage] = useState("");
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [istyping, setIsTyping] = useState(false);
+  const toast = useToast();
+
   const { user, selectedChat, setSelectedChat } = ChatState();
+
+  const sendMessage = async (event) => {
+    if (event.key === "Enter" && newMessage) {
+      try {
+        const config = {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${user.jwtToken}`,
+          },
+        };
+        setNewMessage("");
+        const { data } = await axios.post(
+          "http://localhost:8000/api/message",
+          {
+            content: newMessage,
+            chatId: selectedChat._id,
+          },
+          config
+        );
+        console.log(data.messages);
+        setMessages([...messages, data.messages]);
+      } catch (error) {
+        toast({
+          title: "Error Occured!",
+          description: "Failed to send the Message",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      }
+    }
+  };
+
+  const typingHandler = (e) => {
+    setNewMessage(e.target.value);
+  };
+
   return (
     <>
       {selectedChat ? (
@@ -53,6 +108,28 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             overflowY="hidden"
             bg="#E8E8E8"
           >
+            {loading ? (
+              <Spinner
+                size="xl"
+                width={20}
+                height={20}
+                alignSelf="center"
+                margin="auto"
+              />
+            ) : (
+              <div>{/*Messages*/}</div>
+            )}
+
+            <FormControl onKeyDown={sendMessage} isRequired mt={3}>
+              <Input
+                variant="filled"
+                bg="#E0E0E0"
+                placeholder="Enter a massage..."
+                onChange={typingHandler}
+                value={newMessage}
+              />
+            </FormControl>
+
             {/* All the messages */}
           </Box>
         </>
