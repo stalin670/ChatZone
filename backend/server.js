@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const dotenv = require("dotenv");
 const chats = require("./data/data.js");
 const cors = require("cors");
@@ -16,10 +17,6 @@ app.use(express.json());
 
 app.use(cors({ origin: "http://localhost:3000" }));
 
-app.get("/", (req, res) => {
-  return res.status(200).json({ data: "Api is running successfully" });
-});
-
 // Testing API
 // app.get("/api/chat", (req, res) => {
 //   return res.status(200).json({ chats });
@@ -33,6 +30,25 @@ app.get("/", (req, res) => {
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
+
+//--------------------------------Deploy-------------------------------//
+
+const __dirname1 = path.resolve();
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname1, "/frontend/build")));
+
+  app.get("*", (req, res) => {
+    return res.sendFile(
+      path.resolve(__dirname1, "frontend", "build", "index.html")
+    );
+  });
+} else {
+  app.get("/", (req, res) => {
+    return res.status(200).json({ data: "Api is running successfully" });
+  });
+}
+
+//--------------------------------Deploy-------------------------------//
 
 const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
