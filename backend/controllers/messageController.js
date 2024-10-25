@@ -40,12 +40,30 @@ const sendMessage = async (req, res) => {
     res.status(400).json({
       success: false,
       message: "Internal Server Error",
-      error,
+      error: error,
     });
   }
 };
 
-const allMessages = async (req, res) => {};
+const allMessages = async (req, res) => {
+  try {
+    const messages = await Message.find({ chat: req.params.chatId })
+      .populate("sender", "name pic email")
+      .populate("chat");
+
+    return res.status(200).json({
+      success: true,
+      message: "Message Fetched Successfully",
+      messages,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error,
+    });
+  }
+};
 
 module.exports = {
   sendMessage,
