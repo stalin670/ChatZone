@@ -15,7 +15,12 @@ const PORT = process.env.PORT || 8001;
 connectDB();
 app.use(express.json());
 
-app.use(cors({ origin: "http://localhost:3000" }));
+const corsOptions = {
+  origin: "http://localhost:3000",
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // Testing API
 // app.get("/api/chat", (req, res) => {
@@ -26,6 +31,10 @@ app.use(cors({ origin: "http://localhost:3000" }));
 //   const singleChat = chats.find((chat) => chat._id === req.params.id);
 //   return res.status(200).json({ singleChat });
 // });
+
+app.get("/", (req, res) => {
+  return res.status(200).json({ data: "Api is running successfully" });
+});
 
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
