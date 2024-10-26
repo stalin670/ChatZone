@@ -10,6 +10,7 @@ import { Input } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import BASE_URL from "../../utils/utils.js";
 
 const Login = () => {
   const [show, setShow] = useState(false);
@@ -43,7 +44,7 @@ const Login = () => {
       };
 
       const response = await axios.post(
-        "http://localhost:8000/api/user/login",
+        `${BASE_URL}/api/user/login`,
         { email, password },
         config
       );

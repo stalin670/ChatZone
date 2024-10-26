@@ -6,6 +6,7 @@ import { AddIcon } from "@chakra-ui/icons";
 import ChatLoading from "./ChatLoading";
 import { getSender } from "../config/ChatLogics";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
+import BASE_URL from "../utils/utils";
 
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
@@ -21,10 +22,7 @@ const MyChats = ({ fetchAgain }) => {
         },
       };
 
-      const { data } = await axios.get(
-        "http://localhost:8000/api/chat",
-        config
-      );
+      const { data } = await axios.get(`${BASE_URL}/api/chat`, config);
       // console.log(data.results);
       setChats(data.results);
     } catch (error) {
